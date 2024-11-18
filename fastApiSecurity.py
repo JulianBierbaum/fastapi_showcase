@@ -71,8 +71,7 @@ def get_user(db, username: str):
         return UserInDB(**user_dict)
 
 # If the user doesn't exist 
-# or the inputed password doesn't match 
-# with the hashed password false is returned
+# or the inputed password doesn't match with the hashed password false is returned
 def authenticate_user(fake_db, username: str, password: str):
     user = get_user(fake_db, username)
     if not user:
@@ -81,7 +80,8 @@ def authenticate_user(fake_db, username: str, password: str):
         return False
     return user
 
-# 
+# Method to create the JWT access token (json web tokens)
+# jwt tokens get saved in the browser storage to authenticate the user
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
     to_encode = data.copy()
     if expires_delta:
@@ -92,8 +92,10 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
-
+# Method decodes the jwt token using the shared security key
+# returns the user object from the authenticated user
 async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
+    # unauthorized access
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -101,18 +103,22 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     )
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        # gets the user name from the token
         username: str = payload.get("sub")
         if username is None:
             raise credentials_exception
         token_data = TokenData(username=username)
     except InvalidTokenError:
         raise credentials_exception
+    # Retrieve user from the db using the username
     user = get_user(fake_users_db, username=token_data.username)
     if user is None:
         raise credentials_exception
     return user
 
-
+# Get the current user from the jwt token (previous function)
+# Throws an exeption if the user is disabled
+# Returns the user (if not disabled)
 async def get_current_active_user(
     current_user: Annotated[User, Depends(get_current_user)],
 ):
@@ -125,6 +131,7 @@ async def get_current_active_user(
 async def login_for_access_token(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
 ) -> Token:
+    # checks the hashed passwords and the username with the db
     user = authenticate_user(fake_users_db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
@@ -132,20 +139,22 @@ async def login_for_access_token(
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
+    # Set access token expiration time
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    # Create a new access token with user's username as the subject (sub)
     access_token = create_access_token(
         data={"sub": user.username}, expires_delta=access_token_expires
     )
     return Token(access_token=access_token, token_type="bearer")
 
-
+# Return the currently authenticated user's object
 @app.get("/users/me/", response_model=User)
 async def read_users_me(
     current_user: Annotated[User, Depends(get_current_active_user)],
 ):
     return current_user
 
-
+# Return a list of attributes from the current user
 @app.get("/users/me/items/")
 async def read_own_items(
     current_user: Annotated[User, Depends(get_current_active_user)],
