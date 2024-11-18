@@ -13,7 +13,8 @@ SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-# create a fake user with 
+# create a fake user with a hashed password
+# this will get saved on the database in production
 fake_users_db = {
     "johndoe": {
         "username": "johndoe",
@@ -24,48 +25,54 @@ fake_users_db = {
     }
 }
 
-
+# Model for Token with the acces_token and the type of the token
 class Token(BaseModel):
     access_token: str
     token_type: str
 
-
+# TokenData Model with username as string
 class TokenData(BaseModel):
     username: str | None = None
 
-
+# Model for a User
+# Includes username, email, full_name and a flag if the account is disabled
 class User(BaseModel):
     username: str
     email: str | None = None
     full_name: str | None = None
     disabled: bool | None = None
 
-
+# Model for a User in the Database with the hashed_password of the user
 class UserInDB(User):
     hashed_password: str
 
-
+# Model for the en- and decryption with CryptContext
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
+# Schema for the OAuth2 System
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 app = FastAPI()
 
-
+# Method to verify if a password and a hashed_password are the same
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
 
+# Returns the hash of a password
 def get_password_hash(password):
     return pwd_context.hash(password)
 
 
+# Gets a user object from a list using the users username
 def get_user(db, username: str):
     if username in db:
         user_dict = db[username]
         return UserInDB(**user_dict)
 
-
+# If the user doesn't exist 
+# or the inputed password doesn't match 
+# with the hashed password false is returned
 def authenticate_user(fake_db, username: str, password: str):
     user = get_user(fake_db, username)
     if not user:
@@ -74,7 +81,7 @@ def authenticate_user(fake_db, username: str, password: str):
         return False
     return user
 
-
+# 
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
     to_encode = data.copy()
     if expires_delta:
