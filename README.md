@@ -5,13 +5,11 @@
 
 # Setup for FastApi
 
-To install fastapit run this command in your VS-Code Terminal
+To install fastapi and all other needed packages run this command in your VS-Code Terminal
 
-    pip install "fastapi[standard]"
+    pip install -r ./requirements.txt
 
 it installs fastapi and some optional dependencies 
-
-if you do not want the dependencies use pip install fastapi instead 
 
 # Using FastApi
 
