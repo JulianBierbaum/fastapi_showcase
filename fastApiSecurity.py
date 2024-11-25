@@ -15,6 +15,8 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 # create a fake user with a hashed password
 # this will get saved on the database in production
+# if you want to create a user yourself insert the HS256 hashed password into the table
+# login for this: username: johndoe, password: secret
 fake_users_db = {
     "johndoe": {
         "username": "johndoe",
