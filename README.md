@@ -12,6 +12,7 @@ When building **larger applications** where the API is split across multiple fil
 - Better code separation
 - Ability to add prefixes
 - Can be reused across multiple FastAPI applications
+- Authentication can be in a seperate file instead of the FastAPI App
 
 TL;DR: APIRouter is better for larger applications, routers help in organizing your code into modular chunks.
 
