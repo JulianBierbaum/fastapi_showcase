@@ -3,6 +3,11 @@
 **FastAPI** is a web framework for building APIs quickly and easily with Python. It uses **type hints** to automatically check and process your data, and it creates **interactive documentation** for your API so you can test it right in your browser.
 
 
+# APIRouter()
+
+When building **larger applications** where the API is split across multiple files, **APIRouter** is a useful tool for **structuring** your application. It allows you to organize routes into **separate modules**(users, items, ...), with each module handling a specific feature or resource. Additionally, by using APIRouter, you can define a **prefix** for routes, making it easier to manage and group related paths without repeating common URL segments.
+For an example program see APIRouter.py.
+
 # Setup for FastApi
 
 To install fastapi and all other needed packages run this command in your VS-Code Terminal
@@ -32,7 +37,8 @@ A useful tool are the automatic Interactive API docs using Swagger UI and ReDoc 
 
 # JWT explained
 
-* JWT (JSON Web Token) is a standard for securely transmitting information between parties as a JSON object.
+A JSON Web Token (JWT) is a compact, self-contained, and secure method for transmitting information between two parties (such as a client and a server) as a JSON object. It's widely used for authentication and authorization in web applications.
+
 * A JWT consists of three parts: a header, a payload (claims), and a signature.
   * Header
     * Contains metadata about the token, such as the type of token (JWT) and the signing algorithm used (e.g., HS256 or RS256).
