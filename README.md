@@ -6,7 +6,7 @@
 # APIRouter()
 
 When building **larger applications** where the API is split across multiple files, **APIRouter** is a useful tool for **structuring** your application. It allows you to organize routes into **separate modules**(users, items, ...), with each module handling a specific feature or resource. Additionally, by using APIRouter, you can define a **prefix** for routes, making it easier to manage and group related paths without repeating common URL segments.
-For an example program see APIRouter.py.
+For an example file structure with programs view the exampleAPIRouter Folder.
 
 # Setup for FastApi
 
