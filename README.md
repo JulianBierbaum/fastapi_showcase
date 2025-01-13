@@ -6,7 +6,18 @@
 # APIRouter()
 
 When building **larger applications** where the API is split across multiple files, **APIRouter** is a useful tool for **structuring** your application. It allows you to organize routes into **separate modules**(users, items, ...), with each module handling a specific feature or resource. Additionally, by using APIRouter, you can define a **prefix** for routes, making it easier to manage and group related paths without repeating common URL segments.
-For an example file structure with programs view the exampleAPIRouter Folder.
+
+**Key benefits of using routers:**
+- Easier route management
+- Better code separation
+- Ability to add prefixes
+- Can be reused across multiple FastAPI applications
+- Authentication can be in a seperate file instead of the FastAPI App
+
+TL;DR: APIRouter is better for larger applications, routers help in organizing your code into modular chunks.
+
+
+For an example program see APIRouter.py.
 
 # Setup for FastApi
 
@@ -78,3 +89,12 @@ HMACSHA256(
 * Authorization uses the information within the JWT (like roles or permissions) to control access to resources.
 * Benefits of JWT include being compact, self-contained, stateless, and cross-platform.
 * Security concerns include keeping the secret key safe, using strong signing algorithms, setting token expiration, and managing token revocation effectively.
+
+**secret_key**
+
+Original signature that was generated when the JWT was first created is still in the token.
+-> compare the test signature with the original signature. 
+
+If the test signature is the same as the original signature -> payload and the header have not been modified. 
+
+![alt text](https://i.sstatic.net/b2dzI.png)
