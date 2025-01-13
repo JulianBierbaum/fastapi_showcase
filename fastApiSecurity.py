@@ -27,7 +27,7 @@ fake_users_db = {
     }
 }
 
-# Model for Token with the acces_token and the type of the token
+# Model for Token with the access_token and the type of the token
 class Token(BaseModel):
     access_token: str
     token_type: str
