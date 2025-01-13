@@ -1,5 +1,6 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
+from routers import FastApiAuthorization
 from typing import List
 
 router = APIRouter()
@@ -27,14 +28,7 @@ async def get_user(display_name: str):
             return {"item": user}
     raise HTTPException(status_code=404, detail="User not found")
 
-@router.post("/create_user")
+@router.post("/create_user", dependencies=[Depends(FastApiAuthorization.is_admin)])
 async def create_user(user: User):
     user_list.append(user)
     return {"message": "User added successfully", "item": user}
-
-
-def is_admin(user: User):
-    if user.is_admin == True:
-        return user
-    else:
-        raise HTTPException(status_code=403, detail="Forbidden, not enough priviliges")

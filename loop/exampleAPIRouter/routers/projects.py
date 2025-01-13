@@ -1,5 +1,6 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
+from routers import FastApiAuthorization
 from typing import List
 
 router = APIRouter()
@@ -18,8 +19,7 @@ async def get_all_projects():
     return {"projects": project_list}
 
 
-@router.post("/create_project")
+@router.post("/create_project", dependencies=[Depends(FastApiAuthorization.is_admin)])
 async def create_project(project: Project):
-    if True:
-        project_list.append(project)
-        return HTTPException(status_code=201, detail="Project created")
+    project_list.append(project)
+    return HTTPException(status_code=201, detail="Project created")
