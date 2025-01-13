@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, timezone
 from typing import Annotated
 import jwt
-from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi import Depends, FastAPI, HTTPException, status, APIRouter
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jwt.exceptions import InvalidTokenError
 from passlib.context import CryptContext
@@ -32,6 +32,8 @@ class User(BaseModel):
     disabled: bool | None = None
     is_admin: bool
 
+router = APIRouter()
+
 # Model for a User in the Database with the hashed_password of the user
 class UserInDB(User):
     hashed_password: str
@@ -41,8 +43,6 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # Schema for the OAuth2 System
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
-app = FastAPI()
 
 fake_users_db = {
     "zoezp": {
@@ -151,7 +151,7 @@ def is_product_owner(project_id: int, user: User = Depends(get_current_user)):
         raise HTTPException(status_code=403, detail="Not enough permissions")
     return user
 
-@app.post("/token")
+@router.post("/token")
 async def login_for_access_token(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
 ) -> Token:
@@ -180,26 +180,26 @@ async def get_current_active_user(
 
 
 # Return the currently authenticated user's object
-@app.get("/users/me/", response_model=User)
+@router.get("/users/me/", response_model=User)
 async def read_users_me(
     current_user: Annotated[User, Depends(get_current_active_user)],
 ):
     return current_user
 
 # Return a list of attributes from the current user
-@app.get("/users/me/items/")
+@router.get("/users/me/items/")
 async def read_own_items(
     current_user: Annotated[User, Depends(get_current_active_user)],
 ):
     return [{"item_id": "Foo", "owner": current_user.username}]
 
-@app.get("/users/check/admin")
+@router.get("/users/check/admin")
 async def read_own_items(
     current_user: Annotated[User, Depends(is_admin)],
 ):
     return [{"admin_state": current_user.is_admin, "user": current_user.username}]
 
-@app.get("/users/check/product_owner")
+@router.get("/users/check/product_owner")
 async def read_own_items(
     current_user: Annotated[User, Depends(is_product_owner)],
 ):

@@ -1,0 +1,25 @@
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
+from typing import List
+
+router = APIRouter()
+
+class Project(BaseModel):
+    name: str
+    start_date: str | None = None
+    end_date: str | None = None
+    archived_at: str | None = None
+    github_token: str | None = None
+
+project_list: List[Project] = []
+
+@router.get("/get_all_projects")
+async def get_all_projects():
+    return {"projects": project_list}
+
+
+@router.post("/create_project")
+async def create_project(project: Project):
+    if True:
+        project_list.append(project)
+        return HTTPException(status_code=201, detail="Project created")
