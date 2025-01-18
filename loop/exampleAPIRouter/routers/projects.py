@@ -1,12 +1,12 @@
 from fastapi import APIRouter, HTTPException, Depends
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from routers import FastApiAuthorization
 from typing import List
 
 router = APIRouter()
 
 class Project(BaseModel):
-    name: str
+    name: str = Field(..., min_length=1, max_length=50)
     start_date: str | None = None
     end_date: str | None = None
     archived_at: str | None = None

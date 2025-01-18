@@ -1,14 +1,14 @@
 from fastapi import APIRouter, HTTPException, Depends
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from routers import FastApiAuthorization
 from typing import List
 
 router = APIRouter()
 
 class User(BaseModel):
-    display_name: str
-    password: str
-    is_admin: bool
+    display_name: str = Field(..., min_length=1, max_length=50)
+    password: str = Field(..., min_length=8, max_length=50)
+    is_admin: bool = Field(...)
     microsoft_account: bool | None = None
     archived: str | None = None
     last_active: str | None = None
@@ -31,4 +31,4 @@ async def get_user(display_name: str):
 @router.post("/create_user", dependencies=[Depends(FastApiAuthorization.is_admin)])
 async def create_user(user: User):
     user_list.append(user)
-    return {"message": "User added successfully", "item": user}
+    return HTTPException(status_code=201, detail="User created")
